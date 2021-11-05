@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
 
@@ -31,26 +32,24 @@ public class KafkaProducerConfig {
     private String schemaRegistryUrl;*/
 
     @Bean
-    public Map<String, Object> producerConfigs() {
+    public ProducerFactory<String,person> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
-
-
         props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
-        return props;
+        return new DefaultKafkaProducerFactory<>(props);
     }
 
-    /*@Bean
+   /* @Bean
     public ProducerFactory<String, person> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
    }*/
 //
-//    @Bean
-//    public KafkaTemplate<String, PersonDto> kafkaTemplate() {
-//        return new KafkaTemplate<>(producerFactory());
-//    }
+   @Bean
+    public KafkaTemplate<String, person> kafkaTemplate() {
+        return new KafkaTemplate<>(producerConfigs());
+    }
 
 }
